@@ -8,7 +8,7 @@ TOKEN = os.getenv("TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 # Ссылка на поиск айфонов (сортировка по дате, чтобы видеть новые)
-URL = "https://www.avito.ru/rossiya/mobilnye_telefony/apple-ASgBAgICAkS0AsOTAZL3AyPRCw?cd=1&s=104"
+URL = "https://www.avito.ru/voronezh/telefony/mobilnye_telefony/apple-ASgBAgICAkS0wA3OqzmwwQ2I_Dc"
 
 seen_ads = set()
 
