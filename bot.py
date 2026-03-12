@@ -46,7 +46,7 @@ def check_avito():
         print(f"Ошибка при проверке: {e}")
 
 # Запуск цикла
-if name == "__main__":
+if __name__ == "__main__":
     print("Бот запущен и ищет айфоны...")
     while True:
         check_avito()
