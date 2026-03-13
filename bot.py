@@ -9,7 +9,7 @@ CHAT_ID = os.getenv("CHAT_ID")
 URL = "https://www.avito.ru/voronezh/telefony/mobilnye_telefony/apple-ASgBAgICAkS0wa3OqzmmwQ2I_Dc"
 
 seen_ads = set()
-first_run = True  # Чтобы не спамить старыми объявлениями при запуске
+first_run = True
 
 def check_avito():
     global first_run
@@ -19,15 +19,15 @@ def check_avito():
     
     try:
         print(f"[{time.strftime('%H:%M:%S')}] Проверяю Авито...")
-        response = requests.get(URL, headers=headers, timeout=10)
+        response = requests.get(URL, headers=headers, timeout=15)
         soup = BeautifulSoup(response.text, 'html.parser')
         items = soup.find_all('div', {'data-marker': 'item'})
         
         if not items:
-            print("Предупреждение: Не нашел объявлений на странице. Возможно, Авито просит капчу.")
+            print("Объявлений пока нет или Авито выдал капчу.")
             return
 
-        new_found = 0
+        new_count = 0
         for item in items:
             ad_id = item.get('data-item-id') or item.get('id')
             if ad_id and ad_id not in seen_ads:
@@ -38,28 +38,27 @@ def check_avito():
                     
                     if title_elem and link_elem:
                         title = title_elem.text.strip()
-                        price = price_elem['content'] if price_elem else "Цена не указана"
+                        price = price_elem['content'] if price_elem else "Не указана"
                         link = "https://www.avito.ru" + link_elem['href']
                         
-                        message = f"📱 Нашел новый iPhone!\n\n📌 {title}\n💰 Цена: {price} руб.\n\n🔗 Ссылка: {link}"
-                        
+                        msg = f"📱 Новый iPhone в Воронеже!\n\n📌 {title}\n💰 {price} руб.\n\n🔗 {link}"
                         send_url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-                        requests.post(send_url, json={"chat_id": CHAT_ID, "text": message})
-                        new_found += 1
+                        requests.post(send_url, json={"chat_id": CHAT_ID, "text": msg})
+                        new_count += 1
                 
                 seen_ads.add(ad_id)
         
         if first_run:
-            print(f"Первый запуск: запомнил {len(seen_ads)} существующих объявлений.")
+            print(f"Первый запуск: запомнил {len(seen_ads)} объявлений.")
             first_run = False
         else:
-            print(f"Проверка завершена. Найдено новых: {new_found}")
+            print(f"Проверка окончена. Найдено новых: {new_count}")
 
     except Exception as e:
-        print(f"Ошибка при проверке: {e}")
+        print(f"Ошибка: {e}")
 
 if __name__ == "__main__":
-            print("Бот запущен и мониторит Воронеж...")
+    print("Бот запущен и мониторит Воронеж...")
     while True:
-                check_avito()
-                time.sleep(300) # Проверка каждые 5 минут
+        check_avito()
+        time.sleep(300)
